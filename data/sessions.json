@@ -1,0 +1,137 @@
+{
+  "778c551c4ccf09b40a59424010645c93": {
+    "id": "778c551c4ccf09b40a59424010645c93",
+    "createdAt": "2026-10-14T15:21:21.395Z",
+    "expiresAt": "2026-10-17T15:21:21.395Z",
+    "totalSize": 10252,
+    "fileCount": 1,
+    "files": [
+      {
+        "id": "ee99a611-3e8f-4ed7-88cb-e069ae1d8266",
+        "originalName": "test_photo.jpg",
+        "storedName": "82cf13ccd15c8f495427614b3b15dc8d-1791991281387.jpg",
+        "size": 10252,
+        "mimetype": "image/jpeg",
+        "sha256": "49ce4103dd9ace6479fc0ae16c0bc1ef781b573f7e0e339209a0ca6914e8b0f6",
+        "uploadedAt": "2026-10-14T15:21:21.395Z"
+      }
+    ]
+  },
+  "7bef82dfc1a39d42868eb29f4fdae024": {
+    "id": "7bef82dfc1a39d42868eb29f4fdae024",
+    "createdAt": "2026-10-14T15:22:26.021Z",
+    "expiresAt": "2026-10-17T15:22:26.021Z",
+    "totalSize": 30744,
+    "fileCount": 2,
+    "files": [
+      {
+        "id": "fac66031-7ea2-41d4-b6aa-77f77df42d17",
+        "originalName": "test_photo.jpg",
+        "storedName": "aa9f7f67aa45832d9c8dd432e154957f-1791991346013.jpg",
+        "size": 10252,
+        "mimetype": "image/jpeg",
+        "sha256": "49ce4103dd9ace6479fc0ae16c0bc1ef781b573f7e0e339209a0ca6914e8b0f6",
+        "uploadedAt": "2026-10-14T15:22:26.021Z"
+      },
+      {
+        "id": "785d0b50-b7df-47d7-94c5-e145d33b0fd7",
+        "originalName": "test_video.mp4",
+        "storedName": "51d0fe26bced8d7c0f7e22b44e2fb4de-1791991346015.mp4",
+        "size": 20492,
+        "mimetype": "video/mp4",
+        "sha256": "af0b09f8818526b823acec1106f6ea6a66a86d77e3bc73b1e1139c976e172c4a",
+        "uploadedAt": "2026-10-14T15:22:26.021Z"
+      }
+    ]
+  },
+  "d77a7763824e9615676d98c6dee21d07": {
+    "id": "d77a7763824e9615676d98c6dee21d07",
+    "createdAt": "2026-10-15T12:53:06.211Z",
+    "expiresAt": "2026-10-18T12:53:06.211Z",
+    "totalSize": 2029157,
+    "fileCount": 5,
+    "files": [
+      {
+        "id": "69c1ce19-9016-4f04-849f-a4fce8015076",
+        "originalName": "joy.jpg",
+        "storedName": "e0dc4d8c4e3712ac61ca946b1b3affaa-1792068786184.jpg",
+        "size": 451974,
+        "mimetype": "image/jpeg",
+        "sha256": "7063651f60ca3e076217fd9b91a0a91eb5486d787b924c33f32b58404bae66e5",
+        "uploadedAt": "2026-10-15T12:53:06.211Z"
+      },
+      {
+        "id": "8481732f-748e-4d60-b11d-ac32a21dc574",
+        "originalName": "MYXJ_20200309190817_fast.jpg",
+        "storedName": "93f2f66d0007a5c41efad5e99b57cfd2-1792068786191.jpg",
+        "size": 1062580,
+        "mimetype": "image/jpeg",
+        "sha256": "817237bea035b5830b8bc6af91bee4ee95519e2318074727b547b3472809cdbb",
+        "uploadedAt": "2026-10-15T12:53:06.211Z"
+      },
+      {
+        "id": "a9c51353-6990-4a6a-813c-ef571c096969",
+        "originalName": "download-Photoroom.png",
+        "storedName": "42e3020fcc79dce5ae6d3ebcb7c15648-1792068786201.png",
+        "size": 129448,
+        "mimetype": "image/png",
+        "sha256": "237d73d389f8fccbb46fa681fd84fbcf6f91ec0fc0a72cf8880f82c13151ea7c",
+        "uploadedAt": "2026-10-15T12:53:06.211Z"
+      },
+      {
+        "id": "6d2317c3-629b-4f34-84b6-b7a2792174bf",
+        "originalName": "Jana-Nayagan-2026-Hindi-Dubbed-HDRip-Full-Movie.png",
+        "storedName": "b48ff0fd2652d2503e758c269f91e5cc-1792068786202.png",
+        "size": 371633,
+        "mimetype": "image/png",
+        "sha256": "7c58c2d9485bb443f06bc1aea143ed536809db171e4e1cd574fb307ae0017b9a",
+        "uploadedAt": "2026-10-15T12:53:06.211Z"
+      },
+      {
+        "id": "648a656d-1991-46bf-960f-bd5297c04acf",
+        "originalName": "66221b5caff3a_thumb900.webp",
+        "storedName": "70c9844d686f25d8463b2aca26e182bf-1792068786206.webp",
+        "size": 13522,
+        "mimetype": "image/webp",
+        "sha256": "bc0ba1f61762c5adf66c21e463b168b001961f3d1bb4cf1651e223e047b2dd99",
+        "uploadedAt": "2026-10-15T12:53:06.211Z"
+      }
+    ]
+  },
+  "2ece9cd94ffcd57fab4e0e2bf1927d5e": {
+    "id": "2ece9cd94ffcd57fab4e0e2bf1927d5e",
+    "createdAt": "2026-10-15T13:03:17.820Z",
+    "expiresAt": "2026-10-18T13:03:17.820Z",
+    "totalSize": 22,
+    "fileCount": 1,
+    "files": [
+      {
+        "id": "4343fd14-65ee-4c24-b16e-e349cc8d6a6f",
+        "originalName": "sample.jpg",
+        "storedName": "2e4281955f4c371aee9b29dd6645028a-1792069397816.jpg",
+        "size": 22,
+        "mimetype": "image/jpeg",
+        "sha256": "98a493eab0e7e10f725c3114884d882da2b029a07c5f0aa85ed3a81740861a4c",
+        "uploadedAt": "2026-10-15T13:03:17.820Z"
+      }
+    ]
+  },
+  "3a7ec5fefb508dc98bfd826da72db24c": {
+    "id": "3a7ec5fefb508dc98bfd826da72db24c",
+    "createdAt": "2026-10-18T14:33:35.231Z",
+    "expiresAt": "2026-10-21T14:33:35.231Z",
+    "totalSize": 5242880,
+    "fileCount": 1,
+    "files": [
+      {
+        "id": "57c9c9bb-4cff-4022-ae85-e02d0006dca5",
+        "originalName": "test_5mb.jpg",
+        "storedName": "7fd72625c6d96ce8ac634907b6a186ec-1792334015182.jpg",
+        "size": 5242880,
+        "mimetype": "image/jpeg",
+        "sha256": "24331656da87b75a697a4d81edeb7840f4f784d98095078ad678d229379683c6",
+        "uploadedAt": "2026-10-18T14:33:35.231Z"
+      }
+    ]
+  }
+}

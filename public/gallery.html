@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="bn" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>গ্যালারি - Joy MediaShare</title>
+  <meta name="description" content="আসল কোয়ালিটিতে ছবি ও ভিডিও দেখুন এবং ডাউনলোড করুন। কোনো কম্প্রেশন নেই, মেটাডেটা সম্পূর্ণ অক্ষত।">
+  <link rel="stylesheet" href="/style.css">
+  
+  <!-- Immediate Theme Check to avoid flash of wrong theme -->
+  <script>
+    (function() {
+      try {
+        const saved = localStorage.getItem('joy_theme');
+        const theme = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="/" class="brand-link">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+            <circle cx="12" cy="13" r="4"></circle>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">Joy MediaShare</span>
+          <span class="brand-tag">আসল কোয়ালিটি</span>
+        </div>
+      </a>
+      <div class="header-actions">
+        <!-- Dark / Light Mode Toggle Button -->
+        <button type="button" id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle Dark / Light Mode" title="থিম পরিবর্তন করুন (ডার্ক / লাইট)">
+          <svg class="sun-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <span class="theme-text" id="themeText">ডার্ক</span>
+        </button>
+
+        <a href="/" class="btn btn-secondary btn-sm" style="color: #ffffff; border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.1);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          নতুন আপলোড করুন
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-wrapper">
+
+    <!-- Loading State -->
+    <div id="loadingState" class="empty-state" style="display: block;">
+      <div class="loading-spinner" style="width: 40px; height: 40px; border-color: #cbd5e1; border-top-color: var(--color-primary-accent); margin-bottom: 1rem;"></div>
+      <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--color-primary-navy);">শেয়ার্ড মিডিয়া সেশন লোড হচ্ছে...</h2>
+      <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-top: 0.5rem;">যাচাইকৃত মিডিয়া মেটাডেটা ও প্রিভিউ আনা হচ্ছে।</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorState" class="empty-state" style="display: none;">
+      <div class="empty-state-icon" style="color: var(--color-error);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <h2 id="errorTitle" style="font-size: 1.4rem; font-weight: 800; color: var(--color-primary-navy); margin-bottom: 0.5rem;">সেশন পাওয়া যায়নি</h2>
+      <p id="errorDescription" style="color: var(--color-text-muted); max-width: 500px; margin: 0 auto 1.5rem;">অনুরোধকৃত শেয়ারিং সেশনটি অবৈধ, মুছে গেছে অথবা এর মেয়াদ শেষ হয়ে গেছে।</p>
+      <a href="/" class="btn btn-primary">আপলোড পেজে ফিরে যান</a>
+    </div>
+
+    <!-- Gallery Content Container (Hidden until loaded) -->
+    <div id="galleryContent" style="display: none;">
+      <!-- Header bar with session stats and actions -->
+      <section class="gallery-header-bar">
+        <div class="gallery-top-row">
+          <div class="gallery-title-wrapper">
+            <h1 class="gallery-title">শেয়ার্ড মিডিয়া গ্যালারি</h1>
+            <span class="gallery-subtitle">সম্পূর্ণ অপরিবর্তিত আসল ফাইল &bull; হুবহু আসল সাইজে ডাউনলোড করুন</span>
+          </div>
+
+          <div class="gallery-actions-bar">
+            <button type="button" id="openShareModalBtn" class="btn btn-secondary btn-sm">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <rect x="7" y="7" width="3" height="3"/>
+                <rect x="14" y="7" width="3" height="3"/>
+                <rect x="7" y="14" width="3" height="3"/>
+                <rect x="14" y="14" width="3" height="3"/>
+              </svg>
+              QR ও শেয়ার লিংক
+            </button>
+            <a id="downloadAllZipBtn" href="#" class="btn btn-primary btn-sm">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              সবগুলো ডাউনলোড করুন (Lossless ZIP)
+            </a>
+          </div>
+        </div>
+
+        <div class="gallery-stats-pills">
+          <div class="stat-pill">
+            <span>ফাইল:</span>
+            <strong id="statFileCount">০</strong>
+          </div>
+          <div class="stat-pill">
+            <span>&bull;</span>
+            <span>মোট সাইজ:</span>
+            <strong id="statTotalSize">০ MB</strong>
+          </div>
+          <div class="stat-pill">
+            <span>&bull;</span>
+            <span>আপলোড:</span>
+            <strong id="statCreatedAt">-</strong>
+          </div>
+          <div class="stat-pill">
+            <span>&bull;</span>
+            <span>মেয়াদ শেষ:</span>
+            <strong id="statExpiresAt">-</strong>
+          </div>
+          <div class="stat-pill" style="margin-left: auto;">
+            <span style="color: var(--color-success); font-weight: 600;">&#x2713; ১০০% আসল ফাইল বাইট গ্যারান্টিযুক্ত</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Media Grid -->
+      <section id="mediaGrid" class="media-grid">
+        <!-- Rendered dynamically -->
+      </section>
+    </div>
+  </main>
+
+  <!-- Image Lightbox Modal -->
+  <div id="lightboxModal" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <span id="lightboxFilename" class="modal-title">ছবির ফুল ভিউ</span>
+        <button type="button" id="closeLightboxBtn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <img id="lightboxImage" class="lightbox-img" src="" alt="ছবি ফুল ভিউ">
+      </div>
+      <div class="modal-footer">
+        <div style="font-size: 0.85rem; color: var(--color-text-muted);" id="lightboxMeta">
+          আসল রেজোলিউশন &bull; সম্পূর্ণ অবিকৃত বাইট
+        </div>
+        <a id="lightboxDownloadBtn" href="#" class="btn btn-primary btn-sm">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          আসল ফাইল ডাউনলোড
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Share / QR Modal -->
+  <div id="shareModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 480px;">
+      <div class="modal-header">
+        <span class="modal-title">এই গ্যালারি শেয়ার করুন</span>
+        <button type="button" id="closeShareModalBtn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body" style="background: #ffffff; flex-direction: column; text-align: center; padding: 2rem;">
+        <div class="qr-image-wrapper">
+          <img id="modalQrImg" class="qr-image" src="" alt="Session QR Code">
+        </div>
+        <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 1.25rem;">
+          যেকোনো মোবাইল ক্যামেরা দিয়ে স্ক্যান করে ফাইলগুলো দেখুন ও সরাসরি ডাউনলোড করুন।
+        </p>
+        <div class="copy-input-group" style="width: 100%; margin-bottom: 1rem;">
+          <input type="text" id="modalShareUrlInput" class="copy-input" readonly>
+          <button type="button" id="modalCopyBtn" class="btn btn-primary btn-sm">কপি</button>
+        </div>
+        <a id="modalDownloadQrBtn" href="#" class="btn btn-secondary btn-sm" download="JoyMediaShare-QR.png" style="width: 100%;">
+          QR ছবি ডাউনলোড করুন
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">লিংক কপি করা হয়েছে!</div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <span>&copy; Joy MediaShare &bull; ১০০% আসল কোয়ালিটিতে ছবি ও ভিডিও শেয়ারিং</span>
+      <span>কোনো কম্প্রেশন নেই &bull; কোনো ট্রানকোডিং নেই &bull; ডিরেক্ট স্ট্রিমড ডাউনলোড</span>
+    </div>
+  </footer>
+
+  <!-- Vanilla JavaScript Logic -->
+  <script>
+    (function() {
+      // Theme Manager (Dark / Light Mode)
+      const THEME_STORAGE_KEY = 'joy_theme';
+      const themeToggleBtn = document.getElementById('themeToggleBtn');
+      const themeText = document.getElementById('themeText');
+
+      function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem(THEME_STORAGE_KEY, theme);
+        if (themeText) themeText.textContent = theme === 'dark' ? 'ডার্ক' : 'লাইট';
+        if (themeToggleBtn) {
+          themeToggleBtn.setAttribute('title', theme === 'dark' 
+            ? 'লাইট মোড চালু করুন (Switch to Light Mode)' 
+            : 'ডার্ক মোড চালু করুন (Switch to Dark Mode)');
+        }
+      }
+
+      const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'dark';
+      applyTheme(savedTheme);
+
+      if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+          const current = document.documentElement.getAttribute('data-theme') || 'dark';
+          const next = current === 'dark' ? 'light' : 'dark';
+          applyTheme(next);
+        });
+      }
+
+      // Parse session ID from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const sessionId = urlParams.get('session');
+
+      // UI Containers
+      const loadingState = document.getElementById('loadingState');
+      const errorState = document.getElementById('errorState');
+      const errorTitle = document.getElementById('errorTitle');
+      const errorDescription = document.getElementById('errorDescription');
+      const galleryContent = document.getElementById('galleryContent');
+      const mediaGrid = document.getElementById('mediaGrid');
+
+      // Stats
+      const statFileCount = document.getElementById('statFileCount');
+      const statTotalSize = document.getElementById('statTotalSize');
+      const statCreatedAt = document.getElementById('statCreatedAt');
+      const statExpiresAt = document.getElementById('statExpiresAt');
+      const downloadAllZipBtn = document.getElementById('downloadAllZipBtn');
+
+      // Modals
+      const lightboxModal = document.getElementById('lightboxModal');
+      const closeLightboxBtn = document.getElementById('closeLightboxBtn');
+      const lightboxImage = document.getElementById('lightboxImage');
+      const lightboxFilename = document.getElementById('lightboxFilename');
+      const lightboxDownloadBtn = document.getElementById('lightboxDownloadBtn');
+      const lightboxMeta = document.getElementById('lightboxMeta');
+
+      const shareModal = document.getElementById('shareModal');
+      const openShareModalBtn = document.getElementById('openShareModalBtn');
+      const closeShareModalBtn = document.getElementById('closeShareModalBtn');
+      const modalQrImg = document.getElementById('modalQrImg');
+      const modalShareUrlInput = document.getElementById('modalShareUrlInput');
+      const modalCopyBtn = document.getElementById('modalCopyBtn');
+      const modalDownloadQrBtn = document.getElementById('modalDownloadQrBtn');
+      const toast = document.getElementById('toast');
+
+      let sessionData = null;
+
+      function formatBytes(bytes, decimals = 1) {
+        if (!bytes || bytes === 0) return '0 B';
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+      }
+
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+      }
+
+      function copyToClipboard(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text).then(() => {
+            showToast('ক্লিপবোর্ডে কপি করা হয়েছে!');
+          }).catch(() => {
+            showToast('কপি করা যায়নি।');
+          });
+        } else {
+          const temp = document.createElement('textarea');
+          temp.value = text;
+          document.body.appendChild(temp);
+          temp.select();
+          document.execCommand('copy');
+          document.body.removeChild(temp);
+          showToast('ক্লিপবোর্ডে কপি করা হয়েছে!');
+        }
+      }
+
+      function displayError(title, desc) {
+        loadingState.style.display = 'none';
+        galleryContent.style.display = 'none';
+        errorTitle.textContent = title;
+        errorDescription.textContent = desc;
+        errorState.style.display = 'block';
+      }
+
+      if (!sessionId || !/^[a-f0-9]{32}$/i.test(sessionId)) {
+        displayError('অবৈধ সেশন লিংক', 'শেয়ারিং লিংকটি অসম্পূর্ণ বা ভুল। অনুগ্রহ করে সঠিক লিংক ব্যবহার করুন অথবা নতুন শেয়ারিং লিংক সংগ্রহ করুন।');
+        return;
+      }
+
+      // Fetch session data
+      fetch(`/api/sessions/${sessionId}`)
+        .then(async (response) => {
+          if (!response.ok) {
+            let errorMsg = 'সেশনটি পাওয়া যায়নি বা মেয়াদ শেষ হয়ে গেছে।';
+            try {
+              const data = await response.json();
+              if (data.error) errorMsg = data.error;
+            } catch (_) {}
+            throw new Error(errorMsg);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          sessionData = data;
+          renderGallery(data);
+        })
+        .catch((err) => {
+          displayError('গ্যালারি লোড করা যায়নি', err.message || 'অনুরোধকৃত শেয়ারিং সেশনটি আনা যায়নি।');
+        });
+
+      function renderGallery(session) {
+        loadingState.style.display = 'none';
+        errorState.style.display = 'none';
+        galleryContent.style.display = 'block';
+
+        statFileCount.textContent = `${session.fileCount} টি ফাইল`;
+        statTotalSize.textContent = formatBytes(session.totalSize);
+        statCreatedAt.textContent = new Date(session.createdAt).toLocaleDateString('bn-BD', {
+          month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+        statExpiresAt.textContent = new Date(session.expiresAt).toLocaleDateString('bn-BD', {
+          month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+
+        downloadAllZipBtn.href = `/api/sessions/${sessionId}/download-all`;
+
+        // Configure Share Modal
+        modalQrImg.src = session.qrCodeDataUrl;
+        modalShareUrlInput.value = session.shareUrl;
+        modalDownloadQrBtn.href = `/api/sessions/${sessionId}/qr`;
+
+        mediaGrid.innerHTML = '';
+
+        if (!session.files || session.files.length === 0) {
+          mediaGrid.innerHTML = `
+            <div class="empty-state" style="grid-column: 1 / -1;">
+              <p style="color: var(--color-text-muted);">এই সেশনে কোনো মিডিয়া ফাইল নেই।</p>
+            </div>
+          `;
+          return;
+        }
+
+        session.files.forEach((file) => {
+          const card = document.createElement('div');
+          card.className = 'media-card';
+
+          const isVideo = file.mimetype.startsWith('video/') || /\.(mp4|mov|webm|mkv|avi|3gp)$/i.test(file.originalName);
+          const previewUrl = `/api/sessions/${sessionId}/files/${file.id}/preview`;
+          const downloadUrl = `/api/sessions/${sessionId}/files/${file.id}/download`;
+
+          let previewHtml = '';
+          if (isVideo) {
+            previewHtml = `
+              <div class="media-preview-container">
+                <video class="media-preview-video" controls preload="metadata" playsinline>
+                  <source src="${previewUrl}" type="${file.mimetype}">
+                  আপনার ব্রাউজার এই ভিডিও প্লেয়ার সাপোর্ট করে না।
+                </video>
+              </div>
+            `;
+          } else {
+            previewHtml = `
+              <div class="media-preview-container">
+                <img class="media-preview-img" src="${previewUrl}" alt="${file.originalName}" loading="lazy"
+                  data-preview="${previewUrl}" data-download="${downloadUrl}" data-name="${file.originalName}" data-size="${formatBytes(file.size)}">
+              </div>
+            `;
+          }
+
+          card.innerHTML = `
+            ${previewHtml}
+            <div class="media-card-body">
+              <div>
+                <div class="media-name" title="${file.originalName}">${file.originalName}</div>
+                <div class="media-meta-tags">
+                  <span class="tag-badge">${formatBytes(file.size)}</span>
+                  <span class="tag-badge">${isVideo ? 'ভিডিও' : 'ছবি'}</span>
+                </div>
+                <div class="checksum-bar" title="সম্পূর্ণ SHA-256 চেকসাম কপি করতে ক্লিক করুন" data-hash="${file.sha256}">
+                  <span class="checksum-text">SHA256: ${file.sha256.slice(0, 16)}...</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                </div>
+              </div>
+
+              <div class="media-card-footer">
+                <a href="${downloadUrl}" class="btn btn-primary btn-sm" style="width: 100%;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  আসল ফাইল ডাউনলোড
+                </a>
+              </div>
+            </div>
+          `;
+
+          // Handle preview image error gracefully
+          const img = card.querySelector('.media-preview-img');
+          if (img) {
+            img.addEventListener('error', function() {
+              const container = this.parentElement;
+              container.innerHTML = `
+                <div class="media-fallback-banner">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21 15 16 10 5 21"/>
+                  </svg>
+                  <span style="font-size: 0.8rem;">ব্রাউজারে ছবির প্রিভিউ সমর্থিত নয়</span>
+                </div>
+              `;
+            });
+
+            // Open in lightbox on click
+            img.addEventListener('click', function() {
+              openLightbox(this.getAttribute('data-preview'), this.getAttribute('data-name'), this.getAttribute('data-download'), this.getAttribute('data-size'));
+            });
+          }
+
+          // Handle video error gracefully
+          const vid = card.querySelector('.media-preview-video');
+          if (vid) {
+            vid.addEventListener('error', function() {
+              const container = this.parentElement;
+              container.innerHTML = `
+                <div class="media-fallback-banner">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="23 7 16 12 23 17 23 7"/>
+                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                  </svg>
+                  <span style="font-size: 0.8rem;">ব্রাউজার প্লেয়ার ফরম্যাট সমর্থিত নয়<br>দেখতে নিচে থেকে ডাউনলোড করুন</span>
+                </div>
+              `;
+            });
+          }
+
+          // Checksum copy click handler
+          const checksumBar = card.querySelector('.checksum-bar');
+          if (checksumBar) {
+            checksumBar.addEventListener('click', function() {
+              const fullHash = this.getAttribute('data-hash');
+              copyToClipboard(fullHash);
+            });
+          }
+
+          mediaGrid.appendChild(card);
+        });
+      }
+
+      // Lightbox Functions
+      function openLightbox(src, name, downloadUrl, size) {
+        lightboxImage.src = src;
+        lightboxFilename.textContent = name;
+        lightboxDownloadBtn.href = downloadUrl;
+        lightboxMeta.textContent = `আসল সাইজ: ${size} &bull; ১০০% অবিকৃত আসল বাইট`;
+        lightboxModal.classList.add('open');
+      }
+
+      function closeLightbox() {
+        lightboxModal.classList.remove('open');
+        lightboxImage.src = '';
+      }
+
+      closeLightboxBtn.addEventListener('click', closeLightbox);
+      lightboxModal.addEventListener('click', (e) => {
+        if (e.target === lightboxModal) closeLightbox();
+      });
+
+      // Share Modal Functions
+      openShareModalBtn.addEventListener('click', () => {
+        shareModal.classList.add('open');
+      });
+
+      closeShareModalBtn.addEventListener('click', () => {
+        shareModal.classList.remove('open');
+      });
+
+      shareModal.addEventListener('click', (e) => {
+        if (e.target === shareModal) shareModal.classList.remove('open');
+      });
+
+      modalCopyBtn.addEventListener('click', () => {
+        copyToClipboard(modalShareUrlInput.value);
+      });
+
+      // Close modals with Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeLightbox();
+          shareModal.classList.remove('open');
+        }
+      });
+
+    })();
+  </script>
+</body>
+</html>

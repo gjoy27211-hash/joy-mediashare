@@ -1,0 +1,6 @@
+{
+  "name": "Joy MediaShare",
+  "description": "High-quality original photo and video sharing web application with instant QR codes and lossless downloads.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
