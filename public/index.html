@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="bn" data-theme="dark">
+<html lang="en" data-theme="dark">
 <head>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-4W5ET3G6ZE"></script>
@@ -13,8 +13,8 @@
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Joy MediaShare - আসল কোয়ালিটিতে ছবি ও ভিডিও শেয়ারিং</title>
-  <meta name="description" content="১০০% আসল কোয়ালিটিতে ছবি এবং ভিডিও শেয়ার করুন। কোনো কম্প্রেশন নেই, কোনো রূপান্তর নেই। সাথে সাথে QR কোড এবং শেয়ারিং লিংক।">
+  <title>Joy MediaShare - Original Quality Photo & Video Sharing</title>
+  <meta name="description" content="Share photos and videos in 100% original quality. Zero compression, zero conversion. Instant QR code and sharing link.">
   <link rel="stylesheet" href="/style.css">
   
   <!-- Immediate Theme & Language Check to avoid flash of wrong theme/language -->
@@ -25,7 +25,7 @@
         const theme = savedTheme || (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
         document.documentElement.setAttribute('data-theme', theme);
 
-        const savedLang = localStorage.getItem('joy_lang') || 'bn';
+        const savedLang = localStorage.getItem('joy_lang') || 'en';
         document.documentElement.setAttribute('lang', savedLang);
       } catch (e) {}
     })();
@@ -69,9 +69,9 @@
 
         <!-- Language Switcher (EN / বাংলা) -->
         <div class="lang-switch" id="langSwitch" role="group" aria-label="Language selector">
-          <button type="button" class="lang-opt active" id="langBnBtn" data-lang="bn" title="বাংলা ভাষা">বাংলা</button>
+          <button type="button" class="lang-opt" id="langBnBtn" data-lang="bn" title="বাংলা ভাষা">বাংলা</button>
           <span class="lang-sep">/</span>
-          <button type="button" class="lang-opt" id="langEnBtn" data-lang="en" title="English language">EN</button>
+          <button type="button" class="lang-opt active" id="langEnBtn" data-lang="en" title="English language">EN</button>
         </div>
 
         <!-- Dark / Light Mode Toggle Button (Option 4) -->
