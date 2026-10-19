@@ -78,6 +78,9 @@ function saveSessions(sessions) {
 // In-memory cache synced with disk
 let sessions = loadSessions();
 
+// Track total upload sessions
+let totalUploads = 0;
+
 // Cleanup expired sessions periodically
 function cleanExpiredSessions() {
   const now = Date.now();
@@ -197,6 +200,59 @@ const upload = multer({
 // EXPRESS APPLICATION
 // ==========================================
 const app = express();
+
+// Helper to identify traffic source from Referer header
+function getTrafficSource(req) {
+  const referer = req.get('Referer') || req.get('Referrer');
+  if (!referer) {
+    return 'Direct';
+  }
+  try {
+    const url = new URL(referer);
+    const host = url.hostname.toLowerCase();
+    if (host.includes('facebook') || host.includes('fb.com') || host.includes('fb.me')) {
+      return 'Facebook';
+    }
+    if (host.includes('tiktok')) {
+      return 'TikTok';
+    }
+    if (host.includes('instagram')) {
+      return 'Instagram';
+    }
+    if (host.includes('twitter') || host.includes('t.co') || host.includes('x.com')) {
+      return 'Twitter/X';
+    }
+    if (host.includes('youtube') || host.includes('youtu.be')) {
+      return 'YouTube';
+    }
+    if (host.includes('whatsapp')) {
+      return 'WhatsApp';
+    }
+    if (host.includes('google')) {
+      return 'Google';
+    }
+    if (host.includes('linkedin')) {
+      return 'LinkedIn';
+    }
+    if (host.includes('reddit')) {
+      return 'Reddit';
+    }
+    return url.hostname;
+  } catch (_) {
+    return referer;
+  }
+}
+
+// Simple console tracker for traffic source
+app.use((req, res, next) => {
+  // Only track for page navigations or API endpoints, avoiding static asset noise
+  const isAsset = /\.(css|js|map|png|jpg|jpeg|gif|svg|ico|webp|woff2?)$/i.test(req.path);
+  if (!isAsset) {
+    const trafficSource = getTrafficSource(req);
+    console.log(`🌐 Traffic Source: ${trafficSource}`);
+  }
+  next();
+});
 
 // Security and utility headers
 app.use((req, res, next) => {
@@ -358,6 +414,11 @@ app.post('/api/upload', (req, res) => {
       // Persist session
       sessions[sessionId] = sessionRecord;
       saveSessions(sessions);
+
+      // Increment total successful upload sessions
+      totalUploads++;
+      const totalSizeMb = (totalBytes / (1024 * 1024)).toFixed(2);
+      console.log(`📊 [NEW UPLOAD] Total Sessions Created: ${totalUploads} | Files Uploaded: ${sessionFiles.length} | Total Size: ${totalSizeMb} MB`);
 
       return res.status(201).json({
         success: true,
