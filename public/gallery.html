@@ -17,13 +17,16 @@
   <meta name="description" content="আসল কোয়ালিটিতে ছবি ও ভিডিও দেখুন এবং ডাউনলোড করুন। কোনো কম্প্রেশন নেই, মেটাডেটা সম্পূর্ণ অক্ষত।">
   <link rel="stylesheet" href="/style.css">
   
-  <!-- Immediate Theme Check to avoid flash of wrong theme -->
+  <!-- Immediate Theme & Language Check to avoid flash of wrong theme/language -->
   <script>
     (function() {
       try {
-        const saved = localStorage.getItem('joy_theme');
-        const theme = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        const savedTheme = localStorage.getItem('joy_theme');
+        const theme = savedTheme || (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
         document.documentElement.setAttribute('data-theme', theme);
+
+        const savedLang = localStorage.getItem('joy_lang') || 'bn';
+        document.documentElement.setAttribute('lang', savedLang);
       } catch (e) {}
     })();
   </script>
@@ -42,10 +45,17 @@
         </div>
         <div class="brand-text">
           <span class="brand-name">Joy MediaShare</span>
-          <span class="brand-tag">আসল কোয়ালিটি</span>
+          <span class="brand-tag" id="galleryBrandTag">আসল কোয়ালিটি</span>
         </div>
       </a>
       <div class="header-actions">
+        <!-- Language Switcher (EN / বাংলা) -->
+        <div class="lang-switch" id="langSwitch" role="group" aria-label="Language selector">
+          <button type="button" class="lang-opt active" id="langBnBtn" data-lang="bn" title="বাংলা ভাষা">বাংলা</button>
+          <span class="lang-sep">/</span>
+          <button type="button" class="lang-opt" id="langEnBtn" data-lang="en" title="English language">EN</button>
+        </div>
+
         <!-- Dark / Light Mode Toggle Button -->
         <button type="button" id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle Dark / Light Mode" title="থিম পরিবর্তন করুন (ডার্ক / লাইট)">
           <svg class="sun-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -65,12 +75,12 @@
           <span class="theme-text" id="themeText">ডার্ক</span>
         </button>
 
-        <a href="/" class="btn btn-secondary btn-sm" style="color: #ffffff; border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.1);">
+        <a href="/" class="btn btn-secondary btn-sm" id="newUploadHeaderBtn" style="color: #ffffff; border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.1);">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="12" y1="5" x2="12" y2="19"/>
             <line x1="5" y1="12" x2="19" y2="12"/>
           </svg>
-          নতুন আপলোড করুন
+          <span id="newUploadHeaderText">নতুন আপলোড করুন</span>
         </a>
       </div>
     </div>
@@ -82,8 +92,8 @@
     <!-- Loading State -->
     <div id="loadingState" class="empty-state" style="display: block;">
       <div class="loading-spinner" style="width: 40px; height: 40px; border-color: #cbd5e1; border-top-color: var(--color-primary-accent); margin-bottom: 1rem;"></div>
-      <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--color-primary-navy);">শেয়ার্ড মিডিয়া সেশন লোড হচ্ছে...</h2>
-      <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-top: 0.5rem;">যাচাইকৃত মিডিয়া মেটাডেটা ও প্রিভিউ আনা হচ্ছে।</p>
+      <h2 id="loadingTitle" style="font-size: 1.25rem; font-weight: 700; color: var(--color-primary-navy);">শেয়ার্ড মিডিয়া সেশন লোড হচ্ছে...</h2>
+      <p id="loadingDesc" style="color: var(--color-text-muted); font-size: 0.9rem; margin-top: 0.5rem;">যাচাইকৃত মিডিয়া মেটাডেটা ও প্রিভিউ আনা হচ্ছে।</p>
     </div>
 
     <!-- Error State -->
@@ -97,7 +107,9 @@
       </div>
       <h2 id="errorTitle" style="font-size: 1.4rem; font-weight: 800; color: var(--color-primary-navy); margin-bottom: 0.5rem;">সেশন পাওয়া যায়নি</h2>
       <p id="errorDescription" style="color: var(--color-text-muted); max-width: 500px; margin: 0 auto 1.5rem;">অনুরোধকৃত শেয়ারিং সেশনটি অবৈধ, মুছে গেছে অথবা এর মেয়াদ শেষ হয়ে গেছে।</p>
-      <a href="/" class="btn btn-primary">আপলোড পেজে ফিরে যান</a>
+      <a href="/" class="btn btn-primary" id="backToUploadBtn">
+        <span id="backToUploadText">আপলোড পেজে ফিরে যান</span>
+      </a>
     </div>
 
     <!-- Gallery Content Container (Hidden until loaded) -->
@@ -106,8 +118,8 @@
       <section class="gallery-header-bar">
         <div class="gallery-top-row">
           <div class="gallery-title-wrapper">
-            <h1 class="gallery-title">শেয়ার্ড মিডিয়া গ্যালারি</h1>
-            <span class="gallery-subtitle">সম্পূর্ণ অপরিবর্তিত আসল ফাইল &bull; হুবহু আসল সাইজে ডাউনলোড করুন</span>
+            <h1 class="gallery-title" id="galleryTitle">শেয়ার্ড মিডিয়া গ্যালারি</h1>
+            <span class="gallery-subtitle" id="gallerySubtitle">সম্পূর্ণ অপরিবর্তিত আসল ফাইল &bull; হুবহু আসল সাইজে ডাউনলোড করুন</span>
           </div>
 
           <div class="gallery-actions-bar">
@@ -119,7 +131,7 @@
                 <rect x="7" y="14" width="3" height="3"/>
                 <rect x="14" y="14" width="3" height="3"/>
               </svg>
-              QR ও শেয়ার লিংক
+              <span id="openShareModalBtnText">QR ও শেয়ার লিংক</span>
             </button>
             <a id="downloadAllZipBtn" href="#" class="btn btn-primary btn-sm">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -127,33 +139,33 @@
                 <polyline points="7 10 12 15 17 10"/>
                 <line x1="12" y1="15" x2="12" y2="3"/>
               </svg>
-              সবগুলো ডাউনলোড করুন (Lossless ZIP)
+              <span id="downloadAllZipBtnText">সবগুলো ডাউনলোড করুন (Lossless ZIP)</span>
             </a>
           </div>
         </div>
 
         <div class="gallery-stats-pills">
           <div class="stat-pill">
-            <span>ফাইল:</span>
+            <span id="statFilesLabel">ফাইল:</span>
             <strong id="statFileCount">০</strong>
           </div>
           <div class="stat-pill">
             <span>&bull;</span>
-            <span>মোট সাইজ:</span>
+            <span id="statSizeLabel">মোট সাইজ:</span>
             <strong id="statTotalSize">০ MB</strong>
           </div>
           <div class="stat-pill">
             <span>&bull;</span>
-            <span>আপলোড:</span>
+            <span id="statUploadedLabel">আপলোড:</span>
             <strong id="statCreatedAt">-</strong>
           </div>
           <div class="stat-pill">
             <span>&bull;</span>
-            <span>মেয়াদ শেষ:</span>
+            <span id="statExpiresLabel">মেয়াদ শেষ:</span>
             <strong id="statExpiresAt">-</strong>
           </div>
           <div class="stat-pill" style="margin-left: auto;">
-            <span style="color: var(--color-success); font-weight: 600;">&#x2713; ১০০% আসল ফাইল বাইট গ্যারান্টিযুক্ত</span>
+            <span id="statGuaranteeText" style="color: var(--color-success); font-weight: 600;">&#x2713; ১০০% আসল ফাইল বাইট গ্যারান্টিযুক্ত</span>
           </div>
         </div>
       </section>
@@ -185,7 +197,7 @@
             <polyline points="7 10 12 15 17 10"/>
             <line x1="12" y1="15" x2="12" y2="3"/>
           </svg>
-          আসল ফাইল ডাউনলোড
+          <span id="lightboxDownloadBtnText">আসল ফাইল ডাউনলোড</span>
         </a>
       </div>
     </div>
@@ -195,22 +207,24 @@
   <div id="shareModal" class="modal-overlay">
     <div class="modal-dialog" style="max-width: 480px;">
       <div class="modal-header">
-        <span class="modal-title">এই গ্যালারি শেয়ার করুন</span>
+        <span class="modal-title" id="shareModalTitle">এই গ্যালারি শেয়ার করুন</span>
         <button type="button" id="closeShareModalBtn" class="modal-close-btn">&times;</button>
       </div>
       <div class="modal-body" style="background: #ffffff; flex-direction: column; text-align: center; padding: 2rem;">
         <div class="qr-image-wrapper">
           <img id="modalQrImg" class="qr-image" src="" alt="Session QR Code">
         </div>
-        <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 1.25rem;">
+        <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 1.25rem;" id="shareModalDesc">
           যেকোনো মোবাইল ক্যামেরা দিয়ে স্ক্যান করে ফাইলগুলো দেখুন ও সরাসরি ডাউনলোড করুন।
         </p>
         <div class="copy-input-group" style="width: 100%; margin-bottom: 1rem;">
           <input type="text" id="modalShareUrlInput" class="copy-input" readonly>
-          <button type="button" id="modalCopyBtn" class="btn btn-primary btn-sm">কপি</button>
+          <button type="button" id="modalCopyBtn" class="btn btn-primary btn-sm">
+            <span id="modalCopyBtnText">কপি</span>
+          </button>
         </div>
         <a id="modalDownloadQrBtn" href="#" class="btn btn-secondary btn-sm" download="JoyMediaShare-QR.png" style="width: 100%;">
-          QR ছবি ডাউনলোড করুন
+          <span id="modalDownloadQrBtnText">QR ছবি ডাউনলোড করুন</span>
         </a>
       </div>
     </div>
@@ -222,27 +236,146 @@
   <!-- Footer -->
   <footer class="site-footer">
     <div class="footer-container">
-      <span>&copy; Joy MediaShare &bull; ১০০% আসল কোয়ালিটিতে ছবি ও ভিডিও শেয়ারিং</span>
-      <span>কোনো কম্প্রেশন নেই &bull; কোনো ট্রানকোডিং নেই &bull; ডিরেক্ট স্ট্রিমড ডাউনলোড</span>
+      <span id="galleryFooterLeft">&copy; Joy MediaShare &bull; ১০০% আসল কোয়ালিটিতে ছবি ও ভিডিও শেয়ারিং</span>
+      <span id="galleryFooterRight">কোনো কম্প্রেশন নেই &bull; কোনো ট্রানকোডিং নেই &bull; ডিরেক্ট স্ট্রিমড ডাউনলোড</span>
     </div>
   </footer>
 
-  <!-- Vanilla JavaScript Logic -->
+  <!-- Vanilla JavaScript Logic with Full Bilingual Support -->
   <script>
     (function() {
-      // Theme Manager (Dark / Light Mode)
       const THEME_STORAGE_KEY = 'joy_theme';
+      const LANG_STORAGE_KEY = 'joy_lang';
+
+      // ==========================================
+      // 1. I18N DICTIONARY FOR GALLERY
+      // ==========================================
+      const GALLERY_I18N = {
+        bn: {
+          siteTitle: 'গ্যালারি - Joy MediaShare',
+          metaDesc: 'আসল কোয়ালিটিতে ছবি ও ভিডিও দেখুন এবং ডাউনলোড করুন। কোনো কম্প্রেশন নেই, মেটাডেটা সম্পূর্ণ অক্ষত।',
+          brandTag: 'আসল কোয়ালিটি',
+          themeDark: 'ডার্ক',
+          themeLight: 'লাইট',
+          themeDarkTitle: 'লাইট মোড চালু করুন (Switch to Light Mode)',
+          themeLightTitle: 'ডার্ক মোড চালু করুন (Switch to Dark Mode)',
+          uploadNew: 'নতুন আপলোড করুন',
+          loadingTitle: 'শেয়ার্ড মিডিয়া সেশন লোড হচ্ছে...',
+          loadingDesc: 'যাচাইকৃত মিডিয়া মেটাডেটা ও প্রিভিউ আনা হচ্ছে।',
+          errorTitleDefault: 'সেশন পাওয়া যায়নি',
+          errorDescDefault: 'অনুরোধকৃত শেয়ারিং সেশনটি অবৈধ, মুছে গেছে অথবা এর মেয়াদ শেষ হয়ে গেছে।',
+          backToUpload: 'আপলোড পেজে ফিরে যান',
+          galleryTitle: 'শেয়ার্ড মিডিয়া গ্যালারি',
+          gallerySubtitle: 'সম্পূর্ণ অপরিবর্তিত আসল ফাইল &bull; হুবহু আসল সাইজে ডাউনলোড করুন',
+          qrBtn: 'QR ও শেয়ার লিংক',
+          downloadZip: 'সবগুলো ডাউনলোড করুন (Lossless ZIP)',
+          statFilesLabel: 'ফাইল:',
+          statSizeLabel: 'মোট সাইজ:',
+          statUploadedLabel: 'আপলোড:',
+          statExpiresLabel: 'মেয়াদ শেষ:',
+          statGuarantee: '✓ ১০০% আসল ফাইল বাইট গ্যারান্টিযুক্ত',
+          emptyGallery: 'এই সেশনে কোনো মিডিয়া ফাইল নেই।',
+          tagVideo: 'ভিডিও',
+          tagPhoto: 'ছবি',
+          checksumTitle: 'সম্পূর্ণ SHA-256 চেকসাম কপি করতে ক্লিক করুন',
+          downloadOriginal: 'আসল ফাইল ডাউনলোড',
+          fallbackImg: 'ব্রাউজারে ছবির প্রিভিউ সমর্থিত নয়',
+          fallbackVideo: 'ব্রাউজার প্লেয়ার ফরম্যাট সমর্থিত নয়<br>দেখতে নিচে থেকে ডাউনলোড করুন',
+          lightboxTitle: 'ছবির ফুল ভিউ',
+          lightboxMeta: (size) => `আসল সাইজ: ${size} &bull; ১০০% অবিকৃত আসল বাইট`,
+          lightboxDownload: 'আসল ফাইল ডাউনলোড',
+          shareModalTitle: 'এই গ্যালারি শেয়ার করুন',
+          shareModalDesc: 'যেকোনো মোবাইল ক্যামেরা দিয়ে স্ক্যান করে ফাইলগুলো দেখুন ও সরাসরি ডাউনলোড করুন।',
+          copyBtn: 'কপি',
+          downloadQrBtn: 'QR ছবি ডাউনলোড করুন',
+          toastCopied: 'লিংক কপি করা হয়েছে!',
+          toastCopyFail: 'কপি করা যায়নি।',
+          footerLeft: '&copy; Joy MediaShare &bull; ১০০% আসল কোয়ালিটিতে ছবি ও ভিডিও শেয়ারিং',
+          footerRight: 'কোনো কম্প্রেশন নেই &bull; কোনো ট্রানকোডিং নেই &bull; ডিরেক্ট স্ট্রিমড ডাউনলোড',
+          fileCountFormatted: (n) => `${toBengaliNum(n)} টি ফাইল`
+        },
+        en: {
+          siteTitle: 'Gallery - Joy MediaShare',
+          metaDesc: 'View and download photos and videos in pure original quality. No compression, metadata intact.',
+          brandTag: 'ORIGINAL QUALITY',
+          themeDark: 'Dark',
+          themeLight: 'Light',
+          themeDarkTitle: 'Switch to Light Mode',
+          themeLightTitle: 'Switch to Dark Mode',
+          uploadNew: 'Upload New Files',
+          loadingTitle: 'Loading shared media session...',
+          loadingDesc: 'Fetching verified media metadata and previews.',
+          errorTitleDefault: 'Session Not Found',
+          errorDescDefault: 'The requested sharing session is invalid, deleted, or has expired.',
+          backToUpload: 'Back to Upload Page',
+          galleryTitle: 'Shared Media Gallery',
+          gallerySubtitle: 'Completely unaltered original files &bull; Download in exact original size',
+          qrBtn: 'QR & Share Link',
+          downloadZip: 'Download All (Lossless ZIP)',
+          statFilesLabel: 'Files:',
+          statSizeLabel: 'Total Size:',
+          statUploadedLabel: 'Uploaded:',
+          statExpiresLabel: 'Expires:',
+          statGuarantee: '✓ 100% Original File Bytes Guaranteed',
+          emptyGallery: 'No media files in this session.',
+          tagVideo: 'Video',
+          tagPhoto: 'Photo',
+          checksumTitle: 'Click to copy full SHA-256 checksum',
+          downloadOriginal: 'Download Original',
+          fallbackImg: 'Image preview not supported in browser',
+          fallbackVideo: 'Browser player does not support this format<br>Download below to view',
+          lightboxTitle: 'Full Image View',
+          lightboxMeta: (size) => `Original Size: ${size} &bull; 100% Unaltered Bytes`,
+          lightboxDownload: 'Download Original File',
+          shareModalTitle: 'Share This Gallery',
+          shareModalDesc: 'Scan with any smartphone camera to view files and download directly.',
+          copyBtn: 'Copy',
+          downloadQrBtn: 'Download QR Image',
+          toastCopied: 'Link copied to clipboard!',
+          toastCopyFail: 'Failed to copy.',
+          footerLeft: '&copy; Joy MediaShare &bull; 100% Original Quality Photo & Video Sharing',
+          footerRight: 'Zero Compression &bull; Zero Transcoding &bull; Direct Streamed Download',
+          fileCountFormatted: (n) => `${n} file${n === 1 ? '' : 's'}`
+        }
+      };
+
+      let currentLang = localStorage.getItem(LANG_STORAGE_KEY) || 'bn';
+
+      // Number and byte formatters
+      function toBengaliNum(val) {
+        if (val === undefined || val === null) return '';
+        const bnDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+        return String(val).replace(/[0-9]/g, (d) => bnDigits[parseInt(d, 10)]);
+      }
+
+      function toLangNum(val) {
+        if (currentLang === 'en') return String(val);
+        return toBengaliNum(val);
+      }
+
+      function formatBytes(bytes, decimals = 1) {
+        if (!bytes || bytes === 0) return currentLang === 'en' ? '0 B' : '০ B';
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        const num = parseFloat((bytes / Math.pow(k, i)).toFixed(dm));
+        return `${toLangNum(num)} ${sizes[i]}`;
+      }
+
+      // ==========================================
+      // 2. THEME MANAGER
+      // ==========================================
       const themeToggleBtn = document.getElementById('themeToggleBtn');
       const themeText = document.getElementById('themeText');
 
       function applyTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem(THEME_STORAGE_KEY, theme);
-        if (themeText) themeText.textContent = theme === 'dark' ? 'ডার্ক' : 'লাইট';
+        const t = GALLERY_I18N[currentLang];
+        if (themeText) themeText.textContent = theme === 'dark' ? t.themeDark : t.themeLight;
         if (themeToggleBtn) {
-          themeToggleBtn.setAttribute('title', theme === 'dark' 
-            ? 'লাইট মোড চালু করুন (Switch to Light Mode)' 
-            : 'ডার্ক মোড চালু করুন (Switch to Dark Mode)');
+          themeToggleBtn.setAttribute('title', theme === 'dark' ? t.themeDarkTitle : t.themeLightTitle);
         }
       }
 
@@ -257,11 +390,121 @@
         });
       }
 
-      // Parse session ID from URL
+      // ==========================================
+      // 3. LANGUAGE MANAGER (EN / বাংলা)
+      // ==========================================
+      const langBnBtn = document.getElementById('langBnBtn');
+      const langEnBtn = document.getElementById('langEnBtn');
+
+      function applyLanguage(lang) {
+        currentLang = (lang === 'en') ? 'en' : 'bn';
+        localStorage.setItem(LANG_STORAGE_KEY, currentLang);
+        document.documentElement.setAttribute('lang', currentLang);
+
+        if (langBnBtn && langEnBtn) {
+          if (currentLang === 'bn') {
+            langBnBtn.classList.add('active');
+            langEnBtn.classList.remove('active');
+          } else {
+            langEnBtn.classList.add('active');
+            langBnBtn.classList.remove('active');
+          }
+        }
+
+        const t = GALLERY_I18N[currentLang];
+
+        document.title = t.siteTitle;
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) metaDesc.setAttribute('content', t.metaDesc);
+
+        const galleryBrandTag = document.getElementById('galleryBrandTag');
+        if (galleryBrandTag) galleryBrandTag.textContent = t.brandTag;
+
+        const newUploadHeaderText = document.getElementById('newUploadHeaderText');
+        if (newUploadHeaderText) newUploadHeaderText.textContent = t.uploadNew;
+
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+        if (themeText) themeText.textContent = currentTheme === 'dark' ? t.themeDark : t.themeLight;
+        if (themeToggleBtn) {
+          themeToggleBtn.setAttribute('title', currentTheme === 'dark' ? t.themeDarkTitle : t.themeLightTitle);
+        }
+
+        const loadingTitle = document.getElementById('loadingTitle');
+        if (loadingTitle) loadingTitle.textContent = t.loadingTitle;
+
+        const loadingDesc = document.getElementById('loadingDesc');
+        if (loadingDesc) loadingDesc.textContent = t.loadingDesc;
+
+        const backToUploadText = document.getElementById('backToUploadText');
+        if (backToUploadText) backToUploadText.textContent = t.backToUpload;
+
+        const galleryTitle = document.getElementById('galleryTitle');
+        if (galleryTitle) galleryTitle.textContent = t.galleryTitle;
+
+        const gallerySubtitle = document.getElementById('gallerySubtitle');
+        if (gallerySubtitle) gallerySubtitle.innerHTML = t.gallerySubtitle;
+
+        const openShareModalBtnText = document.getElementById('openShareModalBtnText');
+        if (openShareModalBtnText) openShareModalBtnText.textContent = t.qrBtn;
+
+        const downloadAllZipBtnText = document.getElementById('downloadAllZipBtnText');
+        if (downloadAllZipBtnText) downloadAllZipBtnText.textContent = t.downloadZip;
+
+        const statFilesLabel = document.getElementById('statFilesLabel');
+        if (statFilesLabel) statFilesLabel.textContent = t.statFilesLabel;
+
+        const statSizeLabel = document.getElementById('statSizeLabel');
+        if (statSizeLabel) statSizeLabel.textContent = t.statSizeLabel;
+
+        const statUploadedLabel = document.getElementById('statUploadedLabel');
+        if (statUploadedLabel) statUploadedLabel.textContent = t.statUploadedLabel;
+
+        const statExpiresLabel = document.getElementById('statExpiresLabel');
+        if (statExpiresLabel) statExpiresLabel.textContent = t.statExpiresLabel;
+
+        const statGuaranteeText = document.getElementById('statGuaranteeText');
+        if (statGuaranteeText) statGuaranteeText.textContent = t.statGuarantee;
+
+        const shareModalTitle = document.getElementById('shareModalTitle');
+        if (shareModalTitle) shareModalTitle.textContent = t.shareModalTitle;
+
+        const shareModalDesc = document.getElementById('shareModalDesc');
+        if (shareModalDesc) shareModalDesc.textContent = t.shareModalDesc;
+
+        const modalCopyBtnText = document.getElementById('modalCopyBtnText');
+        if (modalCopyBtnText) modalCopyBtnText.textContent = t.copyBtn;
+
+        const modalDownloadQrBtnText = document.getElementById('modalDownloadQrBtnText');
+        if (modalDownloadQrBtnText) modalDownloadQrBtnText.textContent = t.downloadQrBtn;
+
+        const lightboxDownloadBtnText = document.getElementById('lightboxDownloadBtnText');
+        if (lightboxDownloadBtnText) lightboxDownloadBtnText.textContent = t.lightboxDownload;
+
+        const galleryFooterLeft = document.getElementById('galleryFooterLeft');
+        if (galleryFooterLeft) galleryFooterLeft.innerHTML = t.footerLeft;
+
+        const galleryFooterRight = document.getElementById('galleryFooterRight');
+        if (galleryFooterRight) galleryFooterRight.innerHTML = t.footerRight;
+
+        // If session is already loaded, re-render gallery elements with active language
+        if (sessionData) {
+          renderGallery(sessionData);
+        }
+      }
+
+      if (langBnBtn) {
+        langBnBtn.addEventListener('click', () => applyLanguage('bn'));
+      }
+      if (langEnBtn) {
+        langEnBtn.addEventListener('click', () => applyLanguage('en'));
+      }
+
+      // ==========================================
+      // 4. SESSION RETRIEVAL & GALLERY RENDER
+      // ==========================================
       const urlParams = new URLSearchParams(window.location.search);
       const sessionId = urlParams.get('session');
 
-      // UI Containers
       const loadingState = document.getElementById('loadingState');
       const errorState = document.getElementById('errorState');
       const errorTitle = document.getElementById('errorTitle');
@@ -269,14 +512,12 @@
       const galleryContent = document.getElementById('galleryContent');
       const mediaGrid = document.getElementById('mediaGrid');
 
-      // Stats
       const statFileCount = document.getElementById('statFileCount');
       const statTotalSize = document.getElementById('statTotalSize');
       const statCreatedAt = document.getElementById('statCreatedAt');
       const statExpiresAt = document.getElementById('statExpiresAt');
       const downloadAllZipBtn = document.getElementById('downloadAllZipBtn');
 
-      // Modals
       const lightboxModal = document.getElementById('lightboxModal');
       const closeLightboxBtn = document.getElementById('closeLightboxBtn');
       const lightboxImage = document.getElementById('lightboxImage');
@@ -295,15 +536,6 @@
 
       let sessionData = null;
 
-      function formatBytes(bytes, decimals = 1) {
-        if (!bytes || bytes === 0) return '0 B';
-        const k = 1024;
-        const dm = decimals < 0 ? 0 : decimals;
-        const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-      }
-
       function showToast(message) {
         toast.textContent = message;
         toast.classList.add('show');
@@ -311,20 +543,25 @@
       }
 
       function copyToClipboard(text) {
+        const t = GALLERY_I18N[currentLang];
         if (navigator.clipboard && window.isSecureContext) {
           navigator.clipboard.writeText(text).then(() => {
-            showToast('ক্লিপবোর্ডে কপি করা হয়েছে!');
+            showToast(t.toastCopied);
           }).catch(() => {
-            showToast('কপি করা যায়নি।');
+            showToast(t.toastCopyFail);
           });
         } else {
           const temp = document.createElement('textarea');
           temp.value = text;
           document.body.appendChild(temp);
           temp.select();
-          document.execCommand('copy');
+          try {
+            document.execCommand('copy');
+            showToast(t.toastCopied);
+          } catch (_) {
+            showToast(t.toastCopyFail);
+          }
           document.body.removeChild(temp);
-          showToast('ক্লিপবোর্ডে কপি করা হয়েছে!');
         }
       }
 
@@ -337,7 +574,12 @@
       }
 
       if (!sessionId || !/^[a-f0-9]{32}$/i.test(sessionId)) {
-        displayError('অবৈধ সেশন লিংক', 'শেয়ারিং লিংকটি অসম্পূর্ণ বা ভুল। অনুগ্রহ করে সঠিক লিংক ব্যবহার করুন অথবা নতুন শেয়ারিং লিংক সংগ্রহ করুন।');
+        displayError(
+          currentLang === 'en' ? 'Invalid Session Link' : 'অবৈধ সেশন লিংক', 
+          currentLang === 'en' 
+            ? 'The sharing link is incomplete or invalid. Please check your link or request a new one.' 
+            : 'শেয়ারিং লিংকটি অসম্পূর্ণ বা ভুল। অনুগ্রহ করে সঠিক লিংক ব্যবহার করুন অথবা নতুন শেয়ারিং লিংক সংগ্রহ করুন।'
+        );
         return;
       }
 
@@ -345,7 +587,9 @@
       fetch(`/api/sessions/${sessionId}`)
         .then(async (response) => {
           if (!response.ok) {
-            let errorMsg = 'সেশনটি পাওয়া যায়নি বা মেয়াদ শেষ হয়ে গেছে।';
+            let errorMsg = currentLang === 'en' 
+              ? 'Session not found or has expired.' 
+              : 'সেশনটি পাওয়া যায়নি বা মেয়াদ শেষ হয়ে গেছে।';
             try {
               const data = await response.json();
               if (data.error) errorMsg = data.error;
@@ -359,20 +603,26 @@
           renderGallery(data);
         })
         .catch((err) => {
-          displayError('গ্যালারি লোড করা যায়নি', err.message || 'অনুরোধকৃত শেয়ারিং সেশনটি আনা যায়নি।');
+          displayError(
+            currentLang === 'en' ? 'Could not load gallery' : 'গ্যালারি লোড করা যায়নি', 
+            err.message || (currentLang === 'en' ? 'The requested sharing session could not be retrieved.' : 'অনুরোধকৃত শেয়ারিং সেশনটি আনা যায়নি।')
+          );
         });
 
       function renderGallery(session) {
+        const t = GALLERY_I18N[currentLang];
         loadingState.style.display = 'none';
         errorState.style.display = 'none';
         galleryContent.style.display = 'block';
 
-        statFileCount.textContent = `${session.fileCount} টি ফাইল`;
+        statFileCount.textContent = t.fileCountFormatted(session.fileCount);
         statTotalSize.textContent = formatBytes(session.totalSize);
-        statCreatedAt.textContent = new Date(session.createdAt).toLocaleDateString('bn-BD', {
+
+        const dateLocale = currentLang === 'en' ? 'en-US' : 'bn-BD';
+        statCreatedAt.textContent = new Date(session.createdAt).toLocaleDateString(dateLocale, {
           month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
         });
-        statExpiresAt.textContent = new Date(session.expiresAt).toLocaleDateString('bn-BD', {
+        statExpiresAt.textContent = new Date(session.expiresAt).toLocaleDateString(dateLocale, {
           month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
         });
 
@@ -388,7 +638,7 @@
         if (!session.files || session.files.length === 0) {
           mediaGrid.innerHTML = `
             <div class="empty-state" style="grid-column: 1 / -1;">
-              <p style="color: var(--color-text-muted);">এই সেশনে কোনো মিডিয়া ফাইল নেই।</p>
+              <p style="color: var(--color-text-muted);">${t.emptyGallery}</p>
             </div>
           `;
           return;
@@ -408,7 +658,7 @@
               <div class="media-preview-container">
                 <video class="media-preview-video" controls preload="metadata" playsinline>
                   <source src="${previewUrl}" type="${file.mimetype}">
-                  আপনার ব্রাউজার এই ভিডিও প্লেয়ার সাপোর্ট করে না।
+                  ${currentLang === 'en' ? 'Your browser does not support this video player.' : 'আপনার ব্রাউজার এই ভিডিও প্লেয়ার সাপোর্ট করে না।'}
                 </video>
               </div>
             `;
@@ -428,9 +678,9 @@
                 <div class="media-name" title="${file.originalName}">${file.originalName}</div>
                 <div class="media-meta-tags">
                   <span class="tag-badge">${formatBytes(file.size)}</span>
-                  <span class="tag-badge">${isVideo ? 'ভিডিও' : 'ছবি'}</span>
+                  <span class="tag-badge">${isVideo ? t.tagVideo : t.tagPhoto}</span>
                 </div>
-                <div class="checksum-bar" title="সম্পূর্ণ SHA-256 চেকসাম কপি করতে ক্লিক করুন" data-hash="${file.sha256}">
+                <div class="checksum-bar" title="${t.checksumTitle}" data-hash="${file.sha256}">
                   <span class="checksum-text">SHA256: ${file.sha256.slice(0, 16)}...</span>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
@@ -446,7 +696,7 @@
                     <polyline points="7 10 12 15 17 10"/>
                     <line x1="12" y1="15" x2="12" y2="3"/>
                   </svg>
-                  আসল ফাইল ডাউনলোড
+                  ${t.downloadOriginal}
                 </a>
               </div>
             </div>
@@ -464,12 +714,11 @@
                     <circle cx="8.5" cy="8.5" r="1.5"/>
                     <polyline points="21 15 16 10 5 21"/>
                   </svg>
-                  <span style="font-size: 0.8rem;">ব্রাউজারে ছবির প্রিভিউ সমর্থিত নয়</span>
+                  <span style="font-size: 0.8rem;">${t.fallbackImg}</span>
                 </div>
               `;
             });
 
-            // Open in lightbox on click
             img.addEventListener('click', function() {
               openLightbox(this.getAttribute('data-preview'), this.getAttribute('data-name'), this.getAttribute('data-download'), this.getAttribute('data-size'));
             });
@@ -486,7 +735,7 @@
                     <polygon points="23 7 16 12 23 17 23 7"/>
                     <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
                   </svg>
-                  <span style="font-size: 0.8rem;">ব্রাউজার প্লেয়ার ফরম্যাট সমর্থিত নয়<br>দেখতে নিচে থেকে ডাউনলোড করুন</span>
+                  <span style="font-size: 0.8rem;">${t.fallbackVideo}</span>
                 </div>
               `;
             });
@@ -507,10 +756,11 @@
 
       // Lightbox Functions
       function openLightbox(src, name, downloadUrl, size) {
+        const t = GALLERY_I18N[currentLang];
         lightboxImage.src = src;
         lightboxFilename.textContent = name;
         lightboxDownloadBtn.href = downloadUrl;
-        lightboxMeta.textContent = `আসল সাইজ: ${size} &bull; ১০০% অবিকৃত আসল বাইট`;
+        lightboxMeta.innerHTML = t.lightboxMeta(size);
         lightboxModal.classList.add('open');
       }
 
@@ -548,6 +798,9 @@
           shareModal.classList.remove('open');
         }
       });
+
+      // Initialize language state
+      applyLanguage(currentLang);
 
     })();
   </script>
