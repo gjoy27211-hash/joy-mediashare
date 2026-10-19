@@ -167,7 +167,7 @@
     }
   };
 
-  let currentLang = localStorage.getItem(LANG_STORAGE_KEY) || 'bn';
+  let currentLang = localStorage.getItem(LANG_STORAGE_KEY) || 'en';
 
   // ==========================================
   // 3. THEME MANAGER (DARK / LIGHT MODE - OPTION 4)
