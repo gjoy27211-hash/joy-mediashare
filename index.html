@@ -17,13 +17,16 @@
   <meta name="description" content="১০০% আসল কোয়ালিটিতে ছবি এবং ভিডিও শেয়ার করুন। কোনো কম্প্রেশন নেই, কোনো রূপান্তর নেই। সাথে সাথে QR কোড এবং শেয়ারিং লিংক।">
   <link rel="stylesheet" href="/style.css">
   
-  <!-- Immediate Theme Check to avoid flash of wrong theme -->
+  <!-- Immediate Theme & Language Check to avoid flash of wrong theme/language -->
   <script>
     (function() {
       try {
-        const saved = localStorage.getItem('joy_theme');
-        const theme = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        const savedTheme = localStorage.getItem('joy_theme');
+        const theme = savedTheme || (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
         document.documentElement.setAttribute('data-theme', theme);
+
+        const savedLang = localStorage.getItem('joy_lang') || 'bn';
+        document.documentElement.setAttribute('lang', savedLang);
       } catch (e) {}
     })();
   </script>
@@ -42,17 +45,17 @@
         </div>
         <div class="brand-text">
           <span class="brand-name">Joy MediaShare</span>
-          <span class="brand-tag">আসল কোয়ালিটি</span>
+          <span class="brand-tag" id="brandTag">আসল কোয়ালিটি</span>
         </div>
       </a>
 
       <div class="header-actions">
         <!-- Lossless Guarantee Badge -->
-        <div class="header-badge">
+        <div class="header-badge" id="headerLosslessBadge">
           <svg viewBox="0 0 24 24">
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
-          <span>লসল্যাস গ্যারান্টি (১০০% অপরিবর্তিত)</span>
+          <span id="losslessBadgeText">লসল্যাস গ্যারান্টি (১০০% অপরিবর্তিত)</span>
         </div>
 
         <!-- About Creator Header Button -->
@@ -61,8 +64,15 @@
             <polyline points="16 18 22 12 16 6"></polyline>
             <polyline points="8 6 2 12 8 18"></polyline>
           </svg>
-          <span>About Creator</span>
+          <span id="headerAboutText">About Creator</span>
         </button>
+
+        <!-- Language Switcher (EN / বাংলা) -->
+        <div class="lang-switch" id="langSwitch" role="group" aria-label="Language selector">
+          <button type="button" class="lang-opt active" id="langBnBtn" data-lang="bn" title="বাংলা ভাষা">বাংলা</button>
+          <span class="lang-sep">/</span>
+          <button type="button" class="lang-opt" id="langEnBtn" data-lang="en" title="English language">EN</button>
+        </div>
 
         <!-- Dark / Light Mode Toggle Button (Option 4) -->
         <button type="button" id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle Dark / Light Mode" title="থিম পরিবর্তন করুন (ডার্ক / লাইট)">
@@ -92,8 +102,8 @@
   <main class="main-wrapper">
     <!-- Hero Header -->
     <section class="hero-section">
-      <h1 class="hero-title">আসল কোয়ালিটিতে ছবি ও ভিডিও শেয়ার করুন</h1>
-      <p class="hero-subtitle">
+      <h1 class="hero-title" id="heroTitle">আসল কোয়ালিটিতে ছবি ও ভিডিও শেয়ার করুন</h1>
+      <p class="hero-subtitle" id="heroSubtitle">
         হাই-রেজোলিউশন ফটো ও ভিডিও আপলোড করুন। কোনো রকম কম্প্রেশন, সাইজ কমানো বা রি-এনকোডিং ছাড়াই হুবহু আসল ফাইলে ডাউনলোড করুন।
       </p>
 
@@ -102,14 +112,14 @@
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           </svg>
-          ১০০% অবিকৃত আসল বাইট
+          <span id="pill1Text">১০০% অবিকৃত আসল বাইট</span>
         </div>
         <div class="guarantee-pill">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"/>
             <polyline points="12 6 12 12 14 14"/>
           </svg>
-          EXIF ও কালার প্রোফাইল অক্ষত
+          <span id="pill2Text">EXIF ও কালার প্রোফাইল অক্ষত</span>
         </div>
         <div class="guarantee-pill">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -119,14 +129,14 @@
             <rect x="7" y="14" width="3" height="3"/>
             <rect x="14" y="14" width="3" height="3"/>
           </svg>
-          তাত্ক্ষণিক মোবাইল QR কোড
+          <span id="pill3Text">তাত্ক্ষণিক মোবাইল QR কোড</span>
         </div>
         <div class="guarantee-pill">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="9 11 12 14 22 4"/>
             <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
           </svg>
-          SHA-256 চেকসাম ভেরিফায়েড
+          <span id="pill4Text">SHA-256 চেকসাম ভেরিফায়েড</span>
         </div>
       </div>
     </section>
@@ -148,17 +158,17 @@
             <line x1="12" y1="3" x2="12" y2="15"/>
           </svg>
         </div>
-        <div class="dropzone-text-primary">ফাইলগুলো টেনে এনে এখানে ছেড়ে দিন (Drag & Drop)</div>
-        <div class="dropzone-text-secondary">অথবা আপনার ডিভাইস থেকে বেছে নিতে নিচের বাটনে চাপ দিন</div>
+        <div class="dropzone-text-primary" id="dropPrimary">ফাইলগুলো টেনে এনে এখানে ছেড়ে দিন (Drag & Drop)</div>
+        <div class="dropzone-text-secondary" id="dropSecondary">অথবা আপনার ডিভাইস থেকে বেছে নিতে নিচের বাটনে চাপ দিন</div>
         <button type="button" class="btn btn-primary" id="browseBtn">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
             <polyline points="17 8 12 3 7 8"/>
             <line x1="12" y1="3" x2="12" y2="15"/>
           </svg>
-          ছবি ও ভিডিও সিলেক্ট করুন
+          <span id="browseBtnText">ছবি ও ভিডিও সিলেক্ট করুন</span>
         </button>
-        <div class="dropzone-hints">
+        <div class="dropzone-hints" id="dropHints">
           সমর্থিত ফরম্যাট: JPEG, PNG, WebP, GIF, AVIF, HEIC, TIFF, MP4, MOV, WebM, MKV<br>
           প্রতি ফাইলে সর্বোচ্চ ১ GB &bull; আপলোড থাকবে সম্পূর্ণ অরজিনাল ও অবিকৃত
         </div>
@@ -167,8 +177,8 @@
       <!-- Selected Files Queue -->
       <div id="selectedFilesSection" class="selected-files-section">
         <div class="section-header-row">
-          <h2 class="section-title">শেয়ার করার জন্য নির্বাচিত ফাইলসমূহ</h2>
-          <span id="filesSummary" class="files-summary-text">০ টি ফাইল নির্বাচিত (০ MB)</span>
+          <h2 class="section-title" id="selectedTitle">শেয়ার করার জন্য নির্বাচিত ফাইলসমূহ</h2>
+          <span id="filesSummary" class="files-summary-text">০ টি ফাইল নির্বাচিত (০ B)</span>
         </div>
 
         <div id="fileQueueList" class="file-queue-list">
@@ -182,7 +192,7 @@
               <line x1="22" y1="2" x2="11" y2="13"/>
               <polygon points="22 2 15 22 11 13 2 9 22 2"/>
             </svg>
-            আপলোড করুন ও শেয়ার লিংক তৈরি করুন
+            <span id="startUploadBtnText">আপলোড করুন ও শেয়ার লিংক তৈরি করুন</span>
           </button>
         </div>
       </div>
@@ -208,21 +218,21 @@
 
           <div class="progress-stats-grid">
             <div class="prog-stat-item">
-              <span class="prog-stat-label">ট্রান্সফার ডাটা</span>
-              <span id="progressBytesText" class="prog-stat-val">০ MB / ০ MB</span>
+              <span class="prog-stat-label" id="statDataLabel">ট্রান্সফার ডাটা</span>
+              <span id="progressBytesText" class="prog-stat-val">০ B / ০ B</span>
             </div>
             <div class="prog-stat-item">
-              <span class="prog-stat-label">লাইভ গতি</span>
+              <span class="prog-stat-label" id="statSpeedLabel">লাইভ গতি</span>
               <span id="progressSpeedText" class="prog-stat-val">-- MB/s</span>
             </div>
             <div class="prog-stat-item">
-              <span class="prog-stat-label">বাকি সময় (ETA)</span>
+              <span class="prog-stat-label" id="statEtaLabel">বাকি সময় (ETA)</span>
               <span id="progressEtaText" class="prog-stat-val">হিসাব করা হচ্ছে...</span>
             </div>
           </div>
 
           <div class="progress-footer-row">
-            <span class="progress-hint-note">
+            <span class="progress-hint-note" id="progressHintNote">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"></circle>
                 <line x1="12" y1="16" x2="12" y2="12"></line>
@@ -235,7 +245,7 @@
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
-              আপলোড বাতিল করুন
+              <span id="cancelUploadBtnText">আপলোড বাতিল করুন</span>
             </button>
           </div>
         </div>
@@ -249,7 +259,7 @@
           <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
           <polyline points="22 4 12 14.01 9 11.01"/>
         </svg>
-        <div>
+        <div id="successBannerText">
           <strong>আপলোড সফল হয়েছে!</strong> আপনার ফাইলগুলো অবিকৃত আসল অবস্থায় সংরক্ষিত হয়েছে।
         </div>
       </div>
@@ -257,7 +267,7 @@
       <div class="share-grid">
         <div class="share-details-col">
           <div class="share-link-box">
-            <label class="share-label" for="shareUrlInput">ইউনিক শেয়ারিং গ্যালারি লিংক</label>
+            <label class="share-label" for="shareUrlInput" id="shareUrlLabel">ইউনিক শেয়ারিং গ্যালারি লিংক</label>
             <div class="copy-input-group">
               <input type="text" id="shareUrlInput" class="copy-input" readonly>
               <button type="button" id="copyLinkBtn" class="btn btn-primary">
@@ -265,34 +275,34 @@
                   <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                   <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                 </svg>
-                লিংক কপি করুন
+                <span id="copyLinkBtnText">লিংক কপি করুন</span>
               </button>
             </div>
-            <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 0.5rem;">
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 0.5rem;" id="shareHintText">
               এই লিংকটি যার কাছে থাকবে সে মিডিয়া প্রিভিউ দেখতে এবং আসল ফাইল ডাউনলোড করতে পারবে।
             </p>
           </div>
 
           <div class="session-metadata-summary">
             <div class="meta-row">
-              <span>সেশন আইডি:</span>
+              <span id="metaLabelSessionId">সেশন আইডি:</span>
               <span id="summarySessionId" class="meta-value">-</span>
             </div>
             <div class="meta-row">
-              <span>সংরক্ষিত ফাইল:</span>
+              <span id="metaLabelSavedFiles">সংরক্ষিত ফাইল:</span>
               <span id="summaryFileCount" class="meta-value">-</span>
             </div>
             <div class="meta-row">
-              <span>মোট ফাইলের সাইজ:</span>
+              <span id="metaLabelTotalSize">মোট ফাইলের সাইজ:</span>
               <span id="summaryTotalSize" class="meta-value">-</span>
             </div>
             <div class="meta-row">
-              <span>সেশনের মেয়াদ:</span>
+              <span id="metaLabelExpiresAt">সেশনের মেয়াদ:</span>
               <span id="summaryExpiresAt" class="meta-value">-</span>
             </div>
             <div class="meta-row">
-              <span>অরিজিনাল কোয়ালিটি:</span>
-              <span class="meta-value" style="color: var(--color-success);">SHA-256 ভেরিফায়েড লসল্যাস</span>
+              <span id="metaLabelQuality">অরিজিনাল কোয়ালিটি:</span>
+              <span class="meta-value" id="metaQualityVal" style="color: var(--color-success);">SHA-256 ভেরিফায়েড লসল্যাস</span>
             </div>
           </div>
 
@@ -303,14 +313,14 @@
                 <circle cx="8.5" cy="8.5" r="1.5"/>
                 <polyline points="21 15 16 10 5 21"/>
               </svg>
-              এখনই গ্যালারি খুলুন
+              <span id="openGalleryBtnText">এখনই গ্যালারি খুলুন</span>
             </a>
             <button type="button" id="startNewUploadBtn" class="btn btn-secondary">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="12" y1="5" x2="12" y2="19"/>
                 <line x1="5" y1="12" x2="19" y2="12"/>
               </svg>
-              আরও ফাইল আপলোড করুন
+              <span id="startNewUploadBtnText">আরও ফাইল আপলোড করুন</span>
             </button>
           </div>
         </div>
@@ -320,14 +330,14 @@
           <div class="qr-image-wrapper">
             <img id="qrCodeImg" class="qr-image" src="" alt="Session QR Code">
           </div>
-          <p class="qr-caption">স্মার্টফোন ক্যামেরা দিয়ে স্ক্যান করে সরাসরি মোবাইলে ফাইল ডাউনলোড করুন</p>
+          <p class="qr-caption" id="qrCaption">স্মার্টফোন ক্যামেরা দিয়ে স্ক্যান করে সরাসরি মোবাইলে ফাইল ডাউনলোড করুন</p>
           <a id="downloadQrBtn" class="btn btn-secondary btn-sm" download="JoyMediaShare-QR.png">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
               <polyline points="7 10 12 15 17 10"/>
               <line x1="12" y1="15" x2="12" y2="3"/>
             </svg>
-            QR কোড ডাউনলোড করুন
+            <span id="downloadQrBtnText">QR কোড ডাউনলোড করুন</span>
           </a>
         </div>
       </div>
@@ -341,10 +351,10 @@
       <polyline points="16 18 22 12 16 6"></polyline>
       <polyline points="8 6 2 12 8 18"></polyline>
     </svg>
-    <span>About Creator</span>
+    <span id="floatingAboutText">About Creator</span>
   </button>
 
-  <!-- About Creator Modal Popup (Theme Adapted) -->
+  <!-- About Creator Modal Popup (Theme & Language Adapted) -->
   <div id="aboutCreatorModal" class="modal-overlay" aria-hidden="true">
     <div class="creator-modal-card">
       <button type="button" id="closeAboutModalBtn" class="creator-modal-close" aria-label="Close" title="বন্ধ করুন">&times;</button>
@@ -364,10 +374,10 @@
           <line x1="2" y1="12" x2="22" y2="12"></line>
           <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
         </svg>
-        <span>Web Developer & Creator of Joy MediaShare</span>
+        <span id="creatorRoleText">Web Developer & Creator of Joy MediaShare</span>
       </div>
 
-      <p class="creator-bio">
+      <p class="creator-bio" id="creatorBio">
         "হ্যালো! আমি আরিফুল Hasan জয়। আমি একজন ওয়েব ডেভেলপার এবং বর্তমানে ক্লাস ৯-এ পড়াশোনা করছি। ছবি ও ভিডিওর আসল কোয়ালিটি বজায় রেখে সহজে কিউআর কোডের মাধ্যমে শেয়ার করার জন্য আমি এই প্ল্যাটফর্মটি তৈরি করেছি।"
       </p>
 
@@ -378,7 +388,7 @@
             <polyline points="15 3 21 3 21 9"></polyline>
             <line x1="10" y1="14" x2="21" y2="3"></line>
           </svg>
-          <span>Connect with Me</span>
+          <span id="creatorConnectText">Connect with Me</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="5" y1="12" x2="19" y2="12"></line>
             <polyline points="12 5 19 12 12 19"></polyline>
@@ -394,14 +404,14 @@
   <!-- Site Footer -->
   <footer class="site-footer">
     <div class="footer-container">
-      <span>&copy; Joy MediaShare &bull; ১০০% আসল কোয়ালিটিতে ছবি ও ভিডিও শেয়ারিং</span>
+      <span id="footerCopyright">&copy; Joy MediaShare &bull; ১০০% আসল কোয়ালিটিতে ছবি ও ভিডিও শেয়ারিং</span>
       <div style="display: flex; align-items: center; gap: 1rem;">
         <button type="button" id="footerAboutBtn" class="footer-creator-link">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="16 18 22 12 16 6"></polyline>
             <polyline points="8 6 2 12 8 18"></polyline>
           </svg>
-          About Creator
+          <span id="footerAboutText">About Creator</span>
         </button>
       </div>
     </div>
